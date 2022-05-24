@@ -12,26 +12,29 @@ class Video {
 
             $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
         } else {
-        if(is_array($input)) {
-            $this->sqlData = $input;
-        }
-        else {
-            $query = $this->con->prepare("SELECT * FROM videos WHERE id=:id");
-            $query->bindValue(":id", $input);
-            $query->execute();
+            if(is_array($input)) {
+                $this->sqlData = $input;
+            }
+            else {
+                $query = $this->con->prepare("SELECT * FROM videos WHERE id=:id");
+                $query->bindValue(":id", $input);
+                $query->execute();
 
-            $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
-        }
+                $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
+            }
     }
-        $this->entity = new Entity($con, $this->sqlData["entityId"]);
+        if(isset($this->sqlData["entityId"])){
+            $this->entity = new Entity($con, $this->sqlData["entityId"]);
+        }
     }
 
     public function updateVideo($title, $description, $filePath, $episode, $season){
         $query = $this->con->prepare("UPDATE videos SET title=:title, description=:description, filePath=:filePath,
-        episode=:episode , season=:season WHERE videos.id=:id"); 
+        isMovie=:isMovie, episode=:episode, season=:season WHERE videos.id=:id"); 
         $query->bindValue(":title", $title);
         $query->bindValue(":description", $description);
         $query->bindValue(":filePath",  $filePath);
+        $query->bindValue(":isMovie", $this->getIsMovie());
         $query->bindValue(":episode", $episode);
         $query->bindValue(":season", $season);
         $query->bindValue(":id", $this->getId());
@@ -41,21 +44,23 @@ class Video {
     }
 
     public function deleteVideo(){
-        $query = $this->con->prepare("DELETE * FROM videos WHERE id=:id"); 
+        $query = $this->con->prepare("DELETE FROM videos WHERE id=:id"); 
         $query->bindValue(":id", $this->getId());
         $query->execute();
 
         return $query;
     }
 
-    public function createVideo($name, $thumbnail, $preview){
-        $query = $this->con->prepare("CREATE videos SET name=:name, thumbnail=:thumbnail, preview=:preview,
-        categoryId:categoryId WHERE entities.id=:id"); 
-        $query->bindValue(":name", $this->getName());
-        $query->bindValue(":thumbnail", $this->getThumbnail()());
-        $query->bindValue(":preview", $this->getPreview());
-        $query->bindValue(":categoryId", $this->getCategoryId());
-        $query->bindValue(":id", $this->getId());
+    public function insertVideo($title, $description, $filePath, $isMovie, $season, $episode, $entityId){
+        $query = $this->con->prepare("INSERT INTO videos (title, description, filePath, isMovie, uploadDate, views, season, episode, entityId)
+                                      VALUES (:title, :description, :filePath, :isMovie, now(), 0,  :season, :episode, :entityId)");
+        $query->bindValue(":title", $title);
+        $query->bindValue(":description", $description);
+        $query->bindValue(":filePath", $filePath);
+        $query->bindValue(":isMovie", $isMovie);
+        $query->bindValue(":episode", $episode);
+        $query->bindValue(":season", $season);
+        $query->bindValue(":entityId", $entityId);
         $query->execute();
 
         return $query;
@@ -90,7 +95,20 @@ class Video {
     }
 
     public function getEntityId() {
-        return $this->sqlData["entityId"];
+        if(isset($this->sqlData["entityId"])){
+            return $this->sqlData["entityId"];
+        } else {
+            return false;
+        }
+    }
+
+    public function getIsMovie() {
+        if(isset($this->sqlData["isMovie"])){
+            return $this->sqlData["isMovie"];
+        } else {
+            return false;
+        }
+       
     }
 
     public function incrementViews() {

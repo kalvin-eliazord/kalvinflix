@@ -1,5 +1,4 @@
 <?php
-$hideNav = "hideNav";
 require_once("includes/header.php");
 if(!isset($_GET["id"])) {
     ErrorMessage::show("No ID passed into page");
@@ -8,49 +7,41 @@ if(!isset($_GET["id"])) {
 $entityId = $_GET["id"];
 
 $video = new Video($con, $entityId, "admin");
-
-if(isset($_POST["createButton"])) { 
-        
-    $title = $_POST["title"];
-    $description = $_POST["description"]; // mettre une plus grande area text
-    $filePath = $_POST["filePath"];
-    $season = $_POST["season"];
-    $episode = $_POST["episode"];
-
-    $success = $video->createVideo($title, $description, $filePath, $season, $episode);
-
-    if($success) {
-        header("Location: videoAdmin.php?id=".$video->getEntityId()."");
-    } else {
-        echo "error!";
-    }
-}
+$detailsMessage ="";
 
 if(isset($_POST["updateButton"])) {
-        
+    if(!$_POST["title"] == "" &&
+    !$_POST["description"] == "" && 
+    !$_POST["season"] == "" && 
+    !$_POST["episode"] == ""){     
         $title = $_POST["title"];
-        $description = $_POST["description"]; 
+        $description = $_POST["description"];
         $filePath = $_POST["filePath"];
         $season = $_POST["season"];
         $episode = $_POST["episode"];
-
-        $success = $video->updateVideo($title, $description, $filePath, $season, $episode);
-
-        if($success) {
-            echo "Updating done!"; 
-            header("Location: videoAdmin.php?id=".$video->getEntityId()."");
+        
+        $video->updateVideo($title, $description, $filePath, $episode, $season);
+            $detailsMessage = "<div class='alertSuccess'>
+                                Details updated successfully!
+                            </div>";
         } else {
-            echo "error!";
+            $detailsMessage = "<div class='alertError'>
+                                Update error!
+                               </div>";
         }
     }
 
  if(isset($_POST["deleteButton"])) {
-    $success = $video->deleteVideo();
-
-    if($success) {
-        header("Location: videoAdmin.php?id=".$video->getEntityId()."");
+    if($video->deleteVideo()) {
+        if($isMovie =="0"){
+            header("Location:entityAdmin.php?id=".$entityId);
+        } else {    
+            header("Location: indexAdmin.php");
+        }
     } else {
-        echo "error!";
+        $detailsMessage = "<div class='alertError'>
+                                Delete error!
+                            </div>";
     }
 
  }
@@ -64,77 +55,73 @@ function getInputValue($name) {
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Manage entity</title>
-        <link rel="stylesheet" type="text/css" href="assets/style/style.css" />
+             <link rel="stylesheet" type="text/css" href="assets/style/style.css" />
     </head>
     <body>
         
-        <div class="signInContainer">
-
-            <div class="column">
-
+        <div class="settingsContainer column">
                 <div class="header">
-                    <img src="assets/images/logo.png" title="Logo" alt="Site logo" />
+                <?php 
+            if($video->getIsMovie() == "0"){
+                $name = "tv show";
+            } else {
+                $name = "movie";
+            }
+        ?>
+                <h1> Manage your <?php echo $name ?> </h1>
                 </div>
-
                 <form method="POST">
-                 <table>
-                     <tr>
-                        <td class ="table">
-                            Actual Data:
-                        </td>
-                        <td class ="table"> 
-                            New Data:
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class ="table">
-                            <?php echo $video->getTitle(); ?>
-                        </td>
-                        <td class ="table"> 
-                            <input type="text" name="title" placeholder="Title" value="<?php getInputValue("title"); ?>" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class ="table">
-                            <?php echo $video->getDescription(); ?>
-                        </td>
-                        <td>
-                            <input type="textarea"  name="description" placeholder="Description" value="<?php getInputValue("description"); ?>" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class ="table">
+                 <h2> Title </h2>     
+                            <input type="text" name="title" placeholder="<?php echo $video->getTitle(); ?>" value="<?php getInputValue("title"); ?>">
+                            <h2> Description </h2>
+                            <h4>
+                            </h4>
+                            <input type="textarea"  name="description" style="height:120px" placeholder="<?php echo $video->getDescription(); ?>" value="<?php getInputValue("description"); ?>">
+                            <h2> File path </h2>
                             <?php echo $video->getFilePath(); ?>
-                      </td>
-                        <td>
-                         <input type="text" name="filePath" placeholder="FilePath" value="<?php getInputValue("filePath"); ?>" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class ="table">
-                            <?php echo $video->getSeasonNumber(); ?>
-                      </td>
-                        <td>
-                         <input type="text" name="season" placeholder="season" value="<?php getInputValue("season"); ?>" required>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class ="table">
+                            <select name='filePath'>
+                                <?php
+                                $dirName = 'entities/videos';
+                                $dir = opendir($dirName);
+
+                                while($file = readdir($dir)) {
+                                    if($file != '.' && $file != '..' && !is_dir($dirName.$file))
+                                    {
+                                        echo "<option value='$dirName/$file'> '$file' </option>";
+                                    }
+                                }
+
+                                closedir($dir);
+                                ?>
+                            </select>
+                            <?php 
+                                if($video->getIsMovie() == "0"){
+                            ?>
+                            <h2> Episode </h2>
                             <?php echo $video->getEpisodeNumber(); ?>
-                      </td>
-                        <td>
-                         <input type="number" name="episode" placeholder="episode" value="<?php getInputValue("episode"); ?>" required>
-                        </td>
-                    </tr>
-                 </table> 
-                    <input type="submit" name="createButton" value="CREATE">
-                    <input type="submit" name="updateButton" value="UPDATE">
-                    <input type="submit" name="deleteButton" value="DELETE">
+                         <input type="number" name="episode" placeholder="episode" value="1">
+                         <h2> Season </h2>
+                            <?php echo $video->getSeasonNumber(); ?>
+                         <input type="number" name="season" placeholder="season" value="1">
+                 <?php 
+                                }
+                                ?>
+                         <div class="message">
+                     <?php echo $detailsMessage; ?>
+                 </div>
+                        <input type="submit" name="updateButton" value="UPDATE">
+                        <input type="submit" name="deleteButton" value="DELETE">
                 </form>
-                <a href="entityAdmin.php?id=<?php echo $video->getEntityId()?>" class="signInMessage">Retour</a>
+                <?php 
+                    if($video->getIsMovie() == "0"){
+                        $pageRedirection = "entityAdmin.php?id=".$entityId;
+                    } else {
+                    $pageRedirection = "indexAdmin.php";
+                }
+                ?>
+                <a href="<?php echo $pageRedirection ?>" class="signInMessage">Return</a>
+                </div>
             </div>
-        </div>
 
     </body>
 </html>

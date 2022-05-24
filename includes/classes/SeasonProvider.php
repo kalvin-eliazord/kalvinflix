@@ -10,8 +10,17 @@ class SeasonProvider {
     public function createAdmin($entity) {
         $seasons = $entity->getSeasons();
 
-        if(sizeof($seasons) == 0) {
-            return;
+        $query = $this->con->prepare("SELECT * FROM videos WHERE entityId=:entityId");
+        $query->bindValue(":entityId", $entity->getId());
+        $query->execute();
+        $video = $query->fetch(PDO::FETCH_BOTH);
+        $isMovie = $video["isMovie"];
+        $entityId = $entity->getId();
+
+        if(!isset($isMovie)) {
+            header("Location: insertVideo.php?id=".$entityId);
+        } else if($isMovie == "1" ){
+            header("Location: videoManagement.php?id=".$entityId);
         }
 
         $seasonsHtml = "";
@@ -24,12 +33,15 @@ class SeasonProvider {
             }
 
 
-            $seasonsHtml .= "<div class='season'>
+            $seasonsHtml .= "<div class='seasonAdmin'>
                                     <h3>Season $seasonNumber</h3>
                                     <div class='videos'>
                                         $videosHtml
                                     </div>
                                 </div>";
+            $seasonsHtml .= " <div class='seasonAdmin'>
+                              <a href='insertVideo.php?id=".$entity->getId()."' class='signInMessage'>Insert a video</a>
+                              </div>";
         }
 
         return $seasonsHtml;
@@ -38,8 +50,19 @@ class SeasonProvider {
     public function create($entity) {
         $seasons = $entity->getSeasons();
 
+        $query = $this->con->prepare("SELECT * FROM videos WHERE entityId=:entityId");
+        $query->bindValue(":entityId", $entity->getId());
+        $query->execute();
+        $videos = $query->fetch(PDO::FETCH_BOTH);
+        $firstVideo = $videos[0];
+
         if(sizeof($seasons) == 0) {
-            return;
+          return;
+        } else if(sizeof($seasons) == 0 && $firstVideo["isMovie"] == 0 ){
+            $html = "<h1> Something coming soon : </h1>";
+            $html .= "<h2>". $entity->getName() . "</h2>";
+            $html .="<img src='". $entity->getThumbnail() . "> </div>";
+            return $html ."</div>";
         }
 
         $seasonsHtml = "";

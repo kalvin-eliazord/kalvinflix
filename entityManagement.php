@@ -8,48 +8,54 @@ if(!isset($_GET["id"])) {
 $entityId = $_GET["id"];
 
 $entity = new Entity($con, $entityId);
+$detailsMessage = "";
 
-if(isset($_POST["createButton"])) { // a coder
-        
-    $name = $_POST["name"];
-    $thumbnail = $_POST["thumbnail"]; // on voudra une liste deroulante ou on peut choisir les thumbnail presents en local et pour preview
-    $preview = $_POST["preview"];
-    $category = $_POST["category"];
-
-    $success = $entity->updateEntity($name, $thumbnail, $preview, $category, $entityId);
-
-    if($success) {
-        header("Location: indexAdmin.php");
+if(isset($_POST["insertButton"])) {
+    if(!$_POST["name"] == ""){
+        $thumbnail = $_POST["thumbnail"];
+        $preview = $_POST["preview"];
+        $category = $_POST["category"];
+        $producerId = $_POST["producerId"];
+        $name = $_POST["name"];
+        $entity->insertEntity($name, $thumbnail, $preview, $category, $producerId);
+        $detailsMessage = "<div class='alertSuccess'>
+                                    Details inserted successfully!
+                                </div>";
     } else {
-        echo "error!";
+        $detailsMessage = "<div class='alertError'>
+                                Insert error, please check the fields.
+                            </div>";
     }
 }
 
 if(isset($_POST["updateButton"])) {
-        
-        $name = $_POST["name"];
-        $thumbnail = $_POST["thumbnail"]; // on voudra une liste deroulante ou on peut choisir les thumbnail presents en local et pour preview
+    if(!$_POST["name"] == ""){
+        $thumbnail = $_POST["thumbnail"];
         $preview = $_POST["preview"];
         $category = $_POST["category"];
-
-        $success = $entity->updateEntity($name, $thumbnail, $preview, $category, $entityId);
-
-        if($success) {
-            header("Location: indexAdmin.php");
+        $producerId = $_POST["producerId"];
+        $name = $_POST["name"];
+        $entity->updateEntity($name, $thumbnail, $preview, $category, $producerId);
+        header("Location: entityManagement.php?id=".$entityId);
+        $detailsMessage = "<div class='alertSuccess'>
+                                Details updated successfully!
+                            </div>";
         } else {
-            echo "error!";
+            $detailsMessage = "<div class='alertError'>
+                                Update error, please check the fields.
+                            </div>";
         }
     }
 
  if(isset($_POST["deleteButton"])) {
-    $success = $entity->deleteEntity($entityId);
 
-    if($success) {
+    if($entity->deleteEntity()) {
         header("Location: indexAdmin.php");
     } else {
-        echo "error!";
+        $detailsMessage = "<div class='alertError'>
+                                Delete error!
+                            </div>";
     }
-
  }
 
 function getInputValue($name) {
@@ -89,7 +95,7 @@ function getInputValue($name) {
                             <?php echo $entity->getName(); ?>
                         </td>
                         <td class ="table"> 
-                            <input type="text" name="name" placeholder="Name" value="<?php getInputValue("name"); ?>" required>
+                            <input type="text" name="name" placeholder="Name" value="<?php getInputValue("name"); ?>">
                         </td>
                     </tr>
                     <tr>
@@ -97,7 +103,21 @@ function getInputValue($name) {
                             <?php echo $entity->getThumbnail(); ?>
                         </td>
                         <td>
-                            <input type="list" name="thumbnail" placeholder="Thumbnail" value="<?php getInputValue("thumbnail"); ?>" required>
+                            <select name='thumbnail'>
+                            <?php
+                            $dirName = 'entities/thumbnails-real-images';
+                            $thumbnailsDir = opendir($dirName);
+
+                            while($file = readdir($thumbnailsDir)) {
+                                if($file != '.' && $file != '..' && !is_dir($dirName.$file))
+                                {
+                                    echo "<option value='$dirName/$file'> '$file' </option>";
+                                }
+                            }
+
+                            closedir($thumbnailsDir);
+                            ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -105,18 +125,32 @@ function getInputValue($name) {
                             <?php echo $entity->getPreview(); ?>
                       </td>
                         <td>
-                         <input type="text" name="preview" placeholder="Preview" value="<?php getInputValue("preview"); ?>" required>
+                            <select name='preview'>
+                                <?php
+                                $dirName = 'entities/previews';
+                                $previewsDir = opendir($dirName);
+
+                                while($file = readdir($previewsDir)) {
+                                    if($file != '.' && $file != '..' && !is_dir($dirName.$file))
+                                    {
+                                        echo "<option value='$dirName/$file'> '$file' </option>";
+                                    }
+                                }
+
+                                closedir($previewsDir);
+                                ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class ="table">
                             <?php
-                            $categoryId = $entity->getCategoryId();
+                             $categoryId = $entity->getCategoryId();
                              $query = $con->prepare("SELECT * FROM categories WHERE categories.id=:categoryId");
                                 $query->bindValue(":categoryId",$categoryId);
                                 $query->execute();
                                 while($row = $query->fetch(PDO::FETCH_ASSOC)){
-                                    echo $row["id"]." - ".$row["name"];
+                                    echo $row["name"];
                                 }
                                 
                              ?>
@@ -127,21 +161,48 @@ function getInputValue($name) {
                                 $query = $con->prepare("SELECT * FROM categories");
                                 $query->execute();
                                 while($row = $query->fetch(PDO::FETCH_ASSOC)){       
-                                    echo "<option value='$row[id]'> $row[id] - $row[name] </option>";
+                                    echo "<option value='$row[id]'> $row[name] </option>";
+                                } 
+                            ?>
+                        </select>
+                        </td>
+                        <tr>
+                        <td class ="table">
+                            <?php
+                            $producerId = $entity->getProducerId();
+                             $query = $con->prepare("SELECT * FROM producers WHERE id=:producerId");
+                                $query->bindValue(":producerId",$producerId);
+                                $query->execute();
+                                while($row = $query->fetch(PDO::FETCH_ASSOC)){
+                                    echo $row["fullName"];
+                                }
+                                
+                             ?>
+                        </td>
+                        <td>
+                        <select name='producerId'>
+                            <?php 
+                                $query = $con->prepare("SELECT * FROM producers");
+                                $query->execute();
+                                while($row = $query->fetch(PDO::FETCH_ASSOC)){       
+                                    echo "<option value='$row[id]'> $row[fullName] </option>";
                                 } 
                             ?>
                         </select>
                         </td>
                     </tr>
-                 </table> 
-                    <input type="submit" name="createButton" value="CREATE">
-                    <input type="submit" name="submitButton" value="UPDATE">
-                    <input type="submit" name="deleteButton" value="DELETE">
+                 </table>
+                 <div class="message">
+                     <?php echo $detailsMessage; ?>
+                 </div>
+                    <div class="settingsContainer">
+                        <input type="submit" name="insertButton" value="INSERT">
+                        <input type="submit" name="updateButton" value="UPDATE">
+                        <input type="submit" name="deleteButton" value="DELETE">
+                    </div>
                 </form>
-                <a href="indexAdmin.php" class="signInMessage">Retour</a>
+                <a href="indexAdmin.php" class="signInMessage">Return</a>
             </div>
-
         </div>
-
     </body>
 </html>

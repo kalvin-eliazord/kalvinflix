@@ -8,13 +8,6 @@ class Account {
         $this->con = $con;
     }
 
-    public function isAdmin($un){
-        $query = $this->con->prepare("SELECT isAdmin FROM users WHERE username:un AND isAdmin=1");
-        $query->bindValue(":un", $un);
-        
-        return $query->execute();
-    }
-
     public function updateDetails($fn, $ln, $em, $un) {
         $this->validateFirstName($fn);
         $this->validateLastName($ln);

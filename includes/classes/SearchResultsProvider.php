@@ -8,8 +8,8 @@ class SearchResultsProvider {
         $this->username = $username;
     }
 
-    public function getResults($inputText) {
-        $entities = EntityProvider::getSearchEntities($this->con, $inputText);
+    public function getResults($inputText, $searchMode) {
+        $entities = EntityProvider::getSearchEntities($this->con, $inputText ,$searchMode);
 
         $html = "<div class='previewCategories noScroll'>";
 

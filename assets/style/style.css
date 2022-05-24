@@ -180,6 +180,9 @@ button i {
 }
 
 .table{
+    background-color:  #fff;
+    color: #333;
+    font-size: 18px;
     width:"50%";
 }
 
@@ -188,11 +191,19 @@ button i {
     color: #000;
 }
 
+.categoryAdmin {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 50;
+}
+
 .category {
     display: flex;
     flex-direction: column;
-    padding: 10px 0;
+    padding: 25px 0;
 }
+
+
 
 .entities,
 .videos {
@@ -205,8 +216,16 @@ button i {
     padding: 0 50px;
 }
 
+.enterFavorites {
+    padding-top: 62px;
+    background-color: transparent;
+    width: 100%;
+    margin-right: auto;
+    padding-right: 150px;
+}
+
 .previewCategoriesAdmin {
-    padding: 100px 500px;
+    padding: 50px 50px;
 }
 
 .errorBanner {
@@ -216,6 +235,12 @@ button i {
     width: 100%;
     text-align: center;
     font-size: 18px;
+}
+
+.seasonAdmin {
+    display: flex;
+    flex-direction: column;
+    padding: 50px 50px;
 }
 
 .season {
@@ -366,6 +391,11 @@ button i {
     padding: 100px 50px;
 }
 
+.searchMode {
+    color: #fff;
+    font-size: 20px;
+}
+
 .searchInput {
     height: 50px;
     width: 600px;
@@ -385,7 +415,7 @@ button i {
     margin-right: auto;
 }
 
-.settingsContainer h2 {
+.settingsContainer h2 h4 h1 {
     color: #fff;
     margin-top: 0;
 }
@@ -412,7 +442,7 @@ button i {
 
 .settingsContainer form input[type="submit"] {
     background-color: #dc1928;
-    width: 100px;
+    width: 120px;
     height: 40px;
 }
 

@@ -18,35 +18,36 @@ class Entity {
         }
     }
 
-    public function updateEntity($name, $thumbnail, $preview, $id){
+    public function updateEntity($name, $thumbnail, $preview, $categoryId, $producerId){
         $query = $this->con->prepare("UPDATE entities SET name=:name, thumbnail=:thumbnail, preview=:preview,
-        categoryId:categoryId WHERE entities.id=:id"); 
-        $query->bindValue(":name", $this->getName());
-        $query->bindValue(":thumbnail", $this->getThumbnail()());
-        $query->bindValue(":preview", $this->getPreview());
-        $query->bindValue(":categoryId", $this->getCategoryId());
+        categoryId=:categoryId, producerId=:producerId WHERE id=:id"); 
+        $query->bindValue(":name", $name);
+        $query->bindValue(":thumbnail", $thumbnail);
+        $query->bindValue(":preview", $preview);
+        $query->bindValue(":categoryId", $categoryId);
+        $query->bindValue(":producerId", $producerId);
         $query->bindValue(":id", $this->getId());
         $query->execute();
 
         return $query;
     }
 
-    public function deleteEntity($id){
-        $query = $this->con->prepare("DELETE * FROM entities WHERE id=:id"); 
+    public function deleteEntity(){
+        $query = $this->con->prepare("DELETE FROM entities WHERE id=:id"); 
         $query->bindValue(":id", $this->getId());
         $query->execute();
 
         return $query;
     }
 
-    public function createEntity($name, $thumbnail, $preview){
-        $query = $this->con->prepare("UPDATE entities SET name=:name, thumbnail=:thumbnail, preview=:preview,
-        categoryId:categoryId WHERE entities.id=:id"); 
-        $query->bindValue(":name", $this->getName());
-        $query->bindValue(":thumbnail", $this->getThumbnail()());
-        $query->bindValue(":preview", $this->getPreview());
-        $query->bindValue(":categoryId", $this->getCategoryId());
-        $query->bindValue(":id", $this->getId());
+    public function insertEntity($name, $thumbnail, $preview, $categoryId, $producerId){
+        $query = $this->con->prepare("INSERT INTO entities (name, thumbnail, preview, categoryId, producerId)
+                                      VALUES (:name, :thumbnail, :preview, :categoryId, :producerId)");
+        $query->bindValue(":name", $name);
+        $query->bindValue(":thumbnail", $thumbnail);
+        $query->bindValue(":preview", $preview);
+        $query->bindValue(":categoryId", $categoryId);
+        $query->bindValue(":producerId", $producerId);
         $query->execute();
 
         return $query;
@@ -70,6 +71,20 @@ class Entity {
 
     public function getCategoryId() {
         return $this->sqlData["categoryId"];
+    }
+
+    public function getDescription() {
+        return $this->sqlData["description"];
+    }
+
+    public function getProducerId() {
+        return $this->sqlData["producerId"];
+    }
+
+    public function getVideos() {
+        $query = $this->con->prepare("SELECT * FROM videos WHERE entityId=:id");
+        $query->bindValue(":id", $this->getId());
+        $query->execute();
     }
 
     public function getSeasons() {

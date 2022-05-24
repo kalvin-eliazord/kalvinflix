@@ -16,11 +16,12 @@ $account = new Account($con);
 
         if($success) {
             $_SESSION["userLoggedIn"] = $username;
+            
             $userAdmin = new User($con, $username);
             if($userAdmin->getIsAdmin() == 1){
                 header("Location: indexAdmin.php");
             } else {
-                header("Location: index.php");
+               header("Location: index.php");
             }
         }
     }

@@ -93,6 +93,13 @@ if (isset($_GET['success']) && $_GET['success'] == 'true') {
 ?>
 
 <div class="settingsContainer column">
+    <div class="formSection">
+
+        <h2>
+            <a href="enterFavorites.php"> Click here to enter your favorites! </a>
+        </h2>
+
+    </div>
 
     <div class="formSection">
 

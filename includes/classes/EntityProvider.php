@@ -64,7 +64,7 @@ class EntityProvider {
 
     public static function getEntitiesMostViews($con, $categoryId, $limit) {
 
-        $sql = "SELECT entities.id FROM `entities` 
+        $sql = "SELECT entities.`id`,`name`,`thumbnail`,`preview`,`categoryId`,`producerId` FROM `entities` 
         INNER JOIN videos ON entities.id = videos.entityId ";
 
         if($categoryId != null) {

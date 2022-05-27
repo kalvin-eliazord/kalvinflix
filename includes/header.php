@@ -13,6 +13,7 @@ require_once("includes/classes/CategoryFavorite.php");
 require_once("includes/classes/ActorFavorite.php");
 require_once("includes/classes/ProducerFavorite.php");
 require_once("includes/classes/User.php");
+require_once("includes/classes/Review.php");
 
 if(!isset($_SESSION["userLoggedIn"])) {
     header("Location: register.php");

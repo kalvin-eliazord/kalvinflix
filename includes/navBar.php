@@ -16,6 +16,7 @@ require_once("includes/header.php");
         <li><a href="movies.php">Movies</a></li>
         <li><a href="entitiesFavorites.php">Your favorites</a></li>
         <li><a href="mostViewsEntities.php">Most Views</a></li>
+       <li><a href="mailto:kalvinflix@gmail.com">Contact</a></li>
 
         <?php 
         $userAdmin = new User($con, $userLoggedIn);

@@ -9,25 +9,6 @@ $entityId = $_GET["id"];
 
 $entity = new Entity($con, $entityId);
 $detailsMessage = "";
-
-if(isset($_POST["insertButton"])) {
-    if(!$_POST["name"] == ""){
-        $thumbnail = $_POST["thumbnail"];
-        $preview = $_POST["preview"];
-        $category = $_POST["category"];
-        $producerId = $_POST["producerId"];
-        $name = $_POST["name"];
-        $entity->insertEntity($name, $thumbnail, $preview, $category, $producerId);
-        $detailsMessage = "<div class='alertSuccess'>
-                                    Details inserted successfully!
-                                </div>";
-    } else {
-        $detailsMessage = "<div class='alertError'>
-                                Insert error, please check the fields.
-                            </div>";
-    }
-}
-
 if(isset($_POST["updateButton"])) {
     if(!$_POST["name"] == ""){
         $thumbnail = $_POST["thumbnail"];
@@ -196,7 +177,6 @@ function getInputValue($name) {
                      <?php echo $detailsMessage; ?>
                  </div>
                     <div class="settingsContainer">
-                        <input type="submit" name="insertButton" value="INSERT">
                         <input type="submit" name="updateButton" value="UPDATE">
                         <input type="submit" name="deleteButton" value="DELETE">
                     </div>

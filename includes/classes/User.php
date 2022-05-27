@@ -12,6 +12,15 @@ class User {
         $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getUsernameById($id){
+        $query = $this->con->prepare("SELECT * FROM users WHERE id=:id");
+        $query->bindValue(":id", $id);
+        $query->execute();
+
+        $queryResult = $query->fetch(PDO::FETCH_ASSOC);
+        return $queryResult["username"];
+    }
+
     public function getId() {
         return $this->sqlData["id"];
     }

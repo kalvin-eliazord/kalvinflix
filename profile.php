@@ -71,7 +71,7 @@ if (isset($_GET['success']) && $_GET['success'] == 'true') {
 
         if($result) {
             $subscriptionMessage = "<div class='alertSuccess'>
-                            You're all signed up!
+                             You're all signed up!
                         </div>";
         }
 

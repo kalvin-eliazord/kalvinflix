@@ -24,7 +24,7 @@ class CategoryContainers {
         }
         
         $query->execute();
-        $html = "<div class='previewCategories'>";
+        $html = "<div class='previewCategoriesAdmin'>";
     
         while($categoriesId = $query->fetch(PDO::FETCH_ASSOC)) {
             $html .= $this->getCategoryMostViewsHtml($categoriesId, null, true, true);
@@ -128,7 +128,7 @@ class CategoryContainers {
         $queryText .= implode(", ",$tCategoriesId) . ")";
         $query = $this->con->prepare($queryText);
         $query->execute();
-        $html = "<div class='previewCategories'>";
+        $html = "<div class='previewCategoriesAdmin'>";
 
         while($row = $query->fetch(PDO::FETCH_ASSOC)) {
             $html .= $this->getCategoryFavoriteHtml($row, null, true, true);
@@ -360,7 +360,8 @@ class CategoryContainers {
                     <div class='entities'>
                         $entitiesHtml
                     </div>
-                </div>";
+                </div>
+                <a href='insertEntity.php?id=".$entity->getId()."' class='signInMessage'>Insert entity</a>";
     }
 
 }

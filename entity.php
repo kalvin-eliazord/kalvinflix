@@ -14,9 +14,6 @@ echo $preview->createPreviewVideo($entity);
 <div class="season"> 
     <a href='entityReviews.php?id=<?php echo $entityId ?>'> Click here to review </a>
 </div>
-<div class="season"> 
-    <a href='contact.php?id=<?php echo $entityId ?>'> Contact admin </a>
-</div>
 
 <?php
 $seasonProvider = new SeasonProvider($con, $userLoggedIn);

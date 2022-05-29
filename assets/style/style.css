@@ -95,7 +95,7 @@ a {
     line-height: 32px;
     margin: 0;
     padding-top: 16px;
-    color: #fff;
+    color: #333;
 }
 
 .column .header span {
@@ -203,7 +203,7 @@ button i {
 .categoryAdmin {
     display: flex;
     flex-direction: column;
-    padding: 50px 50;
+    padding: 50px 50px;
 }
 
 .category {

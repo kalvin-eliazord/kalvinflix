@@ -30,15 +30,4 @@ class Review{
         return false;
     }
 
-    public function getUserId(){
-        if(isset($this->sqlData["userId"])){
-            $query = $this->con->prepare("SELECT * FROM reviews WHERE entityId=:entityId");
-            $query->bindValue(":entityId", $this->entityId);
-            $query->execute();
-            
-        return $query->fetch(PDO::FETCH_ASSOC);
-    }
-        return false;
-    }
-
 }

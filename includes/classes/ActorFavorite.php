@@ -1,17 +1,11 @@
 <?php
 class ActorFavorite {
 
-    private $con, $sqlData, $userId;
+    private $con, $userId;
 
     public function __construct($con,$userId) {
         $this->con = $con;
         $this->userId = $userId;
-
-        $query = $this->con->prepare("SELECT * FROM actorsFavorites WHERE userId=:userId");
-        $query->bindValue(":userId", $userId);
-        $query->execute();
-
-        $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
     }
 
     public function deleteActorFavorite($actorId){
@@ -20,12 +14,24 @@ class ActorFavorite {
 
         } else {
             $query = $this->con->prepare("DELETE FROM actorsFavorites WHERE userId=:userId AND actorId=:actorId"); 
-            $query->bindValue(":actorId", $this->actorId);
+            $query->bindValue(":actorId", $actorId);
             $query->bindValue(":userId", $this->userId);
             $query->execute();
 
             return $query;
         }
+    }
+
+    public function getActorsFavoritesId(){
+        $query = $this->con->prepare("SELECT actorId FROM actorsFavorites WHERE userId=:userId");
+        $query->bindValue(":userId", $this->userId);
+        $query->execute();
+
+        if($query->rowCount() !== 0) {
+            return $query;
+        } else {
+            return false;
+        } 
     }
 
     private function checkIfExist($actorId){
@@ -52,10 +58,6 @@ class ActorFavorite {
 
             return $query;
         }
-    }
-
-    public function getId() {
-        return $this->sqlData["id"];
     }
 
 }

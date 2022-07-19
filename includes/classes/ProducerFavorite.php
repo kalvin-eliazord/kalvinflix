@@ -1,17 +1,11 @@
 <?php
 class ProducerFavorite {
 
-    private $con, $userId, $sqlData;
+    private $con, $userId;
 
     public function __construct($con, $userId) {
         $this->con = $con;
         $this->userId = $userId;
-
-        $query = $this->con->prepare("SELECT * FROM producersFavorites WHERE userId=:userId");
-        $query->bindValue(":userId", $this->userId);
-        $query->execute();
-        
-        $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
     }
 
     public function deleteProducerFavorite($producerId){
@@ -27,6 +21,19 @@ class ProducerFavorite {
     
             return $query;
         }
+    }
+
+    public function getProducersFavoritesId(){
+        $userId = $this->userId;
+        $query = $this->con->prepare("SELECT * FROM producersFavorites WHERE userId=:userId");
+        $query->bindValue(":userId", $userId);
+        $query->execute();
+
+        if($query->rowCount() !== 0) {
+            return $query;
+        } else {
+            return false;
+        }    
     }
 
     private function checkIfExist($producerId){
@@ -53,13 +60,7 @@ class ProducerFavorite {
 
             return $query;
         }
-    }
-
-    public function getId() {
-        return $this->sqlData["id"];
-    }
-
-    
+    }  
 
 }
 ?>

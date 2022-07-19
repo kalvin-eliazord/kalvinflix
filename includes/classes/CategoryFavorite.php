@@ -6,14 +6,14 @@ class CategoryFavorite  {
     public function __construct($con, $userId) {
         $this->con = $con;
         $this->userId = $userId;
-
-        $query = $this->con->prepare("SELECT * FROM categoriesFavorites WHERE userId=:userId");
-        $query->bindValue(":userId", $this->userId);
-        $query->execute();
-        
-        $this->sqlData = $query->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getCategories(){
+        $query = $this->con->prepare("SELECT * FROM categories");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+    
     public function deleteCategoryFavorite($categoryId){
         if(!$this->checkIfExist($categoryId)){
             return false;
@@ -53,10 +53,6 @@ class CategoryFavorite  {
 
             return $query;
         }
-    }
-
-    public function getId() {
-        return $this->sqlData["id"];
     }
 
 }
